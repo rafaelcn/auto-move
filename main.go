@@ -10,8 +10,8 @@ var (
 	configuration Configuration
 
 	ConfigurationFolder = flag.String("rules-folder", "./rules/", "Change the directory used when reading .json configuration files")
-	MoveUpdateTime      = flag.Int("", 100, "Refresh time of the move algorithm in milliseconds")
-	ConfigUpdateTime    = flag.Int("", 500, "Refresh time of the configuration file parser in milliseconds")
+	MoveUpdateTime      = flag.Int("move-refresh", 100, "Refresh time of the move algorithm in milliseconds")
+	ConfigUpdateTime    = flag.Int("config-refresh", 500, "Refresh time of the configuration file parser in milliseconds")
 )
 
 func main() {
