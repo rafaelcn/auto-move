@@ -9,6 +9,7 @@ import (
 // Move moves files from the source path to the destination path.
 func Move(src string, dest string) {
 	destFile, err := os.Create(dest)
+	defer destFile.Close()
 
 	if err != nil {
 		log.Printf("[!] Couldn't create a file to copy. Reason: %v", err)
@@ -22,8 +23,8 @@ func Move(src string, dest string) {
 		log.Printf("[!] Couldn't copy contents of the %s file. Reason %v", src, err)
 	}
 
+	// Close the original file to removal
 	srcFile.Close()
-	destFile.Close()
 
 	err = os.Remove(src)
 
