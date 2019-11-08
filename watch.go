@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"log"
 	"path"
+	"time"
 )
 
 func Watch(configuration Configuration) {
@@ -12,8 +13,6 @@ func Watch(configuration Configuration) {
 	to := configuration.Folders.To
 
 	extensions := configuration.Predicates.Extensions
-
-	// os.Rename to move files or use os.(Create|Copy|Remove) ...
 
 	for {
 		// Break the loop if no folders are being currently watched
@@ -41,5 +40,6 @@ func Watch(configuration Configuration) {
 			}
 
 		}
+		time.Sleep(time.Duration(*MoveUpdateTime) * time.Millisecond)
 	}
 }

@@ -1,21 +1,33 @@
 package main
 
-import "time"
+import (
+	"flag"
+	"strings"
+	"time"
+)
 
 var (
 	configuration Configuration
+
+	ConfigurationFolder = flag.String("rules-folder", "./rules/", "Change the directory used when reading .json configuration files")
+	MoveUpdateTime      = flag.Int("", 100, "Refresh time of the move algorithm in milliseconds")
+	ConfigUpdateTime    = flag.Int("", 500, "Refresh time of the configuration file parser in milliseconds")
 )
 
 func main() {
+	flag.Parse()
+
+	// Add a slash if the user didn't write one.
+	if !strings.HasSuffix(*ConfigurationFolder, "/") {
+		*ConfigurationFolder = *ConfigurationFolder + "/"
+	}
 
 	var rules []Configuration
+	rules = Parse(*ConfigurationFolder)
 
-	rules = Parse("./rules/")
-
-	// Look for new rules on a period of 500ms
 	go func() {
 		rules = Parse("./rules/")
-		time.Sleep(500 * time.Second)
+		time.Sleep(time.Duration(*MoveUpdateTime) * time.Second)
 	}()
 
 	for _, rule := range rules {
@@ -23,7 +35,7 @@ func main() {
 		go Watch(rule)
 	}
 
-	// stop point
+	// wait for a signal
 	done := make(chan bool, 1)
 
 	<-done
