@@ -23,6 +23,8 @@ func Move(src string, dest string) {
 	}
 
 	srcFile.Close()
+	destFile.Close()
+
 	err = os.Remove(src)
 
 	if err != nil {
