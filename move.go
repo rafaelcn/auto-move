@@ -22,6 +22,7 @@ func Move(src string, dest string) {
 		log.Printf("[!] Couldn't copy contents of the %s file. Reason %v", src, err)
 	}
 
+	srcFile.Close()
 	err = os.Remove(src)
 
 	if err != nil {
