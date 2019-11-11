@@ -53,7 +53,7 @@ func Watch(configuration Configuration) {
 
 					if len(mask) == len(filename) {
 						// flag to verify the move after the for
-						shouldMove := false
+						shouldMove := true
 
 						for i := 0; i < len(mask); i++ {
 							l := string(filename[i])
@@ -63,22 +63,23 @@ func Watch(configuration Configuration) {
 								_, err := strconv.Atoi(l)
 
 								if err != nil {
+									shouldMove = false
 									break
 								}
 							case "L":
 								r := []rune(l)
 
 								if !unicode.IsLetter(r[0]) {
+									shouldMove = false
 									break
 								}
 							default:
 								// Any other character has to be equal
 								if string(mask[i]) != l {
+									shouldMove = false
 									break
 								}
 							}
-
-							shouldMove = true
 						}
 
 						if shouldMove {
