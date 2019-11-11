@@ -11,7 +11,6 @@ var (
 
 	ConfigurationFolder = flag.String("rules-folder", "./rules/", "Change the directory used when reading .json configuration files")
 	MoveUpdateTime      = flag.Int("move-refresh", 100, "Refresh time of the move algorithm in milliseconds")
-	ConfigUpdateTime    = flag.Int("config-refresh", 500, "Refresh time of the configuration file parser in milliseconds")
 )
 
 func main() {
@@ -22,22 +21,19 @@ func main() {
 		*ConfigurationFolder = *ConfigurationFolder + "/"
 	}
 
-	var rules []Configuration
-	rules = Parse(*ConfigurationFolder)
+	rules := Parse(*ConfigurationFolder)
 
 	go func() {
-		rules = Parse("./rules/")
-		time.Sleep(time.Duration(*MoveUpdateTime) * time.Second)
+		for {
+			rules = Parse(*ConfigurationFolder)
+			time.Sleep(20 * time.Millisecond)
+		}
 	}()
 
-	for _, rule := range rules {
-		// For each config file init a goroutine to run the set up
-		go Watch(rule)
+	for {
+		for _, rule := range rules {
+			Watch(rule)
+		}
+		time.Sleep(time.Duration(*MoveUpdateTime) * time.Millisecond)
 	}
-
-	// wait for a signal
-	done := make(chan bool, 1)
-
-	<-done
-
 }

@@ -16,16 +16,25 @@ type (
 		To      string   `json:"to"`
 	}
 
-	// Rules represents a set of rules regarding a configuration file. 
+	// Rules represents a set of rules regarding a configuration file. A rule is
+	// comprised of a type and predicates of that type, the known types for the
+	// auto-move are: "filetype", "filename", "suffix", "prefix". Each type has
+	// its own way to encode the predicates. 
+	// The filetype encodes the predicates in an array of string such as:
+	// [".pdf", ".doc"].
+	// The filename acts kind of a mask on which the filename is matched with
+	// the given mask. A mask can encode characters and digits, e.g., a file
+	// with the name 02012-32120-21321.54654 can be encoded in the following
+	// mask: DDDD-DDDDD-DDDDD.DDDDD
 	Rules struct {
-		Type       string   `json:"type"`
-		Extensions []string `json:"extensions"`
+		Type       string `json:"type"`
+		Predicates interface{} `json:"predicate"`
 	}
 
 	// Configuration represents a set of settings in a configuration file.
 	Configuration struct {
-		Folders    Dirs `json:"dirs"`
-		Predicates Rules `json:"rules"`
+		Folders Dirs  `json:"dirs"`
+		Rules   Rules `json:"rule"`
 	}
 )
 
@@ -53,9 +62,10 @@ func Parse(folder string) []Configuration {
 			err = json.Unmarshal(content, &configuration)
 
 			if err != nil {
-				log.Fatalf("[!] Couldn't parse the configuration file. Reason: %v", err)
+				log.Printf("[!] Couldn't parse the configuration file. Reason: %v", err)
+				return nil
 			}
-			
+
 			configurations = append(configurations, configuration)
 		}
 	}
