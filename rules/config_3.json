@@ -1,0 +1,13 @@
+{
+    "dirs": {
+        "watch": [
+            ""
+        ],
+        "to": ""
+    },
+
+    "rule": {
+        "type": "prefix",
+        "predicate": ["07", "05"]
+    }
+}

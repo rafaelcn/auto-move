@@ -1,0 +1,13 @@
+{
+    "dirs": {
+        "watch": [
+            ""
+        ],
+        "to": ""
+    },
+
+    "rule": {
+        "type": "filename",
+        "predicate": "DDD-LLL.DD"
+    }
+}
