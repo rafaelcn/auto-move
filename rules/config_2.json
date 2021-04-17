@@ -1,13 +1,14 @@
 {
     "dirs": {
         "watch": [
-            ""
+            "/home/ranu/Programming/Go/src/github.com/rafaelcn/auto-move/watched"
         ],
-        "to": ""
+        "to": "/home/ranu/Programming/Go/src/github.com/rafaelcn/auto-move/moved"
     },
 
     "rule": {
         "type": "filename",
-        "predicate": "DDD-LLL.DD"
+        "predicate": "DDD-LLL.DD",
+        "action": ""
     }
 }

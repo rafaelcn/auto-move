@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -18,6 +20,7 @@ func Watch(configuration Configuration) {
 	to := configuration.Folders.To
 
 	predicate := configuration.Rules.Type
+	action := configuration.Rules.Action
 
 	for _, dir := range folders {
 		files, err := ioutil.ReadDir(dir)
@@ -54,36 +57,39 @@ func Watch(configuration Configuration) {
 					if len(mask) == len(filename) {
 						// flag to verify the move after the for
 						shouldMove := true
+						var err error
 
-						for i := 0; i < len(mask); i++ {
+						for i := 0; i < len(mask) && err == nil; i++ {
 							l := string(filename[i])
 
 							switch string(mask[i]) {
 							case "D":
-								_, err := strconv.Atoi(l)
+								_, err = strconv.Atoi(l)
 
 								if err != nil {
 									shouldMove = false
-									break
 								}
 							case "L":
 								r := []rune(l)
 
 								if !unicode.IsLetter(r[0]) {
 									shouldMove = false
-									break
+									msg := fmt.Sprintf("character at position %d is not a letter: %s", i, l)
+									err = errors.New(msg)
 								}
 							default:
 								// Any other character has to be equal
 								if string(mask[i]) != l {
 									shouldMove = false
-									break
+									msg := fmt.Sprintf("character at position %d is not equal: %s", i, l)
+									err = errors.New(msg)
 								}
 							}
 						}
 
 						if shouldMove {
-							move(file, dir+"/"+file.Name(), to+"/"+file.Name())
+							act(file, action, dir+"/"+file.Name(),
+								to+"/"+file.Name())
 						}
 					}
 				case "suffix":
@@ -93,7 +99,8 @@ func Watch(configuration Configuration) {
 						suffix := suffix.(string)
 
 						if strings.HasSuffix(filename, suffix) {
-							move(file, dir+"/"+file.Name(), to+"/"+file.Name())
+							act(file, action, dir+"/"+file.Name(),
+								to+"/"+file.Name())
 						}
 					}
 				case "prefix":
@@ -103,8 +110,18 @@ func Watch(configuration Configuration) {
 						prefix := prefix.(string)
 
 						if strings.HasPrefix(filename, prefix) {
-							move(file, dir+"/"+file.Name(), to+"/"+file.Name())
+							act(file, action, dir+"/"+file.Name(),
+								to+"/"+file.Name())
 						}
+					}
+				case "size":
+					sizes := configuration.Rules.Predicates.([]interface{})
+
+					for _, size := range sizes {
+						size := size.(int64)
+						fileSize := file.Size()
+
+						log.Printf("[+] Dummy rule size %d %d", size, fileSize)
 					}
 				}
 			}
@@ -114,7 +131,21 @@ func Watch(configuration Configuration) {
 	}
 }
 
+func act(file os.FileInfo, action Actions, dir, to string) {
+	switch action {
+	case ActionMove:
+		move(file, dir, to)
+	case ActionDelete:
+		delete(file)
+
+	}
+}
+
 func move(file os.FileInfo, dir, to string) {
 	log.Printf("[+] Moving file from %s to %s", file.Name(), file.Name())
 	Move(dir, to)
+}
+
+func delete(file os.FileInfo) {
+	os.Remove(file.Name())
 }

@@ -1,13 +1,14 @@
 {
     "dirs": {
         "watch": [
-            ""
+            "/home/ranu/Programming/Go/src/github.com/rafaelcn/auto-move/watched"
         ],
-        "to": ""
+        "to": "/home/ranu/Programming/Go/src/github.com/rafaelcn/auto-move/moved"
     },
 
     "rule": {
         "type": "prefix",
-        "predicate": ["07", "05"]
+        "predicate": ["07", "05"],
+        "action": ""
     }
 }
