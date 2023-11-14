@@ -1,9 +1,9 @@
 {
     "dirs": {
         "watch": [
-            "/home/ranu/Programming/Go/src/github.com/rafaelcn/auto-move/watched"
+            "/home/ranu/Documents/"
         ],
-        "to": "/home/ranu/Programming/Go/src/github.com/rafaelcn/auto-move/moved"
+        "to": "/home/ranu/Documents/Books"
     },
 
     "rule": {
