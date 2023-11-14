@@ -1,9 +1,9 @@
 {
     "dirs": {
         "watch": [
-            "/home/ranu/Downloads/"
+            "/home/ranu/Downloads/sample-1"
         ],
-        "to": "/home/ranu/Downloads/2 - Documents"
+        "to": "/home/ranu/Downloads/sample-2"
     },
 
     "rule": {
