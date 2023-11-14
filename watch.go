@@ -3,10 +3,11 @@ package main
 import (
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io/fs"
 	"log"
 	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"unicode"
@@ -23,16 +24,34 @@ func Watch(configuration Configuration) {
 	action := configuration.Rules.Action
 
 	for _, dir := range folders {
-		files, err := ioutil.ReadDir(dir)
+		files := []string{}
+
+		err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+			if d.IsDir() {
+				return nil
+			}
+
+			log.Printf(path, d.Name())
+			files = append(files, path+d.Name())
+
+			return nil
+		})
 
 		if err != nil {
 			// Implement a try system and remove a folder if the system
-			log.Printf("[!] Failed to read dir %s. Reason %v", dir, err)
+			log.Fatalf("[!] failed to walk dir %s, reason %v", dir, err)
 		}
 
 		// O(m*n)
-		for _, file := range files {
+		for _, filename := range files {
+			file, err := os.Stat(filename)
+			if err != nil {
+				log.Printf("[!] failed to stat file, reason %v", err)
+				continue
+			}
+
 			_f := file.Name()
+
 			filename := _f[0:(len(_f) - len(path.Ext(_f)))]
 
 			if configuration.Rules.Predicates != nil {

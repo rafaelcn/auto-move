@@ -5,11 +5,20 @@ import (
 	"os"
 	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMove(t *testing.T) {
-	srcPath, _ := ioutil.TempDir(os.TempDir(), "src")
-	destPath, _ := ioutil.TempDir(os.TempDir(), "dest")
+	var err error
+
+	srcPath, err := os.MkdirTemp("", "src")
+
+	assert.Nil(t, err)
+
+	destPath, err := os.MkdirTemp("", "dst")
+
+	assert.Nil(t, err)
 
 	type args struct {
 		src  string
@@ -45,7 +54,7 @@ func TestMove(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := ioutil.WriteFile(tt.args.src+"/"+tt.name, []byte(tt.content), os.ModePerm)
+			err := os.WriteFile(tt.args.src+"/"+tt.name, []byte(tt.content), os.ModePerm)
 
 			if err != nil {
 				t.Fatalf("Couldn't create file for testing. Reason %v", err)
