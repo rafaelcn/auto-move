@@ -31,8 +31,7 @@ func Watch(configuration Configuration) {
 				return nil
 			}
 
-			log.Printf(path, d.Name())
-			files = append(files, path+d.Name())
+			files = append(files, path)
 
 			return nil
 		})
@@ -62,9 +61,9 @@ func Watch(configuration Configuration) {
 					for _, extension := range extensions {
 						e := extension.(string)
 
-						log.Printf("[+] Verifying file %s", file.Name())
+						log.Printf("[+] verifying file %s", file.Name())
 						if e == path.Ext(file.Name()) {
-							move(file, dir+"/"+file.Name(), to+"/"+file.Name())
+							move(dir+"/"+file.Name(), to+"/"+file.Name())
 						}
 					}
 				case "filename":
@@ -107,8 +106,7 @@ func Watch(configuration Configuration) {
 						}
 
 						if shouldMove {
-							act(file, action, dir+"/"+file.Name(),
-								to+"/"+file.Name())
+							do(action, dir+"/"+file.Name(), to+"/"+file.Name())
 						}
 					}
 				case "suffix":
@@ -118,8 +116,7 @@ func Watch(configuration Configuration) {
 						suffix := suffix.(string)
 
 						if strings.HasSuffix(filename, suffix) {
-							act(file, action, dir+"/"+file.Name(),
-								to+"/"+file.Name())
+							do(action, dir+"/"+file.Name(), to+"/"+file.Name())
 						}
 					}
 				case "prefix":
@@ -129,8 +126,7 @@ func Watch(configuration Configuration) {
 						prefix := prefix.(string)
 
 						if strings.HasPrefix(filename, prefix) {
-							act(file, action, dir+"/"+file.Name(),
-								to+"/"+file.Name())
+							do(action, dir+"/"+file.Name(), to+"/"+file.Name())
 						}
 					}
 				case "size":
@@ -140,7 +136,7 @@ func Watch(configuration Configuration) {
 						size := size.(int64)
 						fileSize := file.Size()
 
-						log.Printf("[+] Dummy rule size %d %d", size, fileSize)
+						log.Printf("[+] dummy rule size %d %d", size, fileSize)
 					}
 				}
 			}
@@ -150,21 +146,24 @@ func Watch(configuration Configuration) {
 	}
 }
 
-func act(file os.FileInfo, action Actions, dir, to string) {
+func do(action Actions, from, to string) {
 	switch action {
 	case ActionMove:
-		move(file, dir, to)
+		move(from, to)
 	case ActionDelete:
-		delete(file)
+		delete(from)
 
 	}
 }
 
-func move(file os.FileInfo, dir, to string) {
-	log.Printf("[+] Moving file from %s to %s", file.Name(), file.Name())
+func move(dir, to string) {
+	log.Printf("[+] moving file from %s to %s", dir, to)
 	Move(dir, to)
 }
 
-func delete(file os.FileInfo) {
-	os.Remove(file.Name())
+func delete(file string) {
+	err := os.Remove(file)
+	if err != nil {
+		log.Printf("failed to delete file %s, reason %v", file, err)
+	}
 }

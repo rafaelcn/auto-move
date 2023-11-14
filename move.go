@@ -11,10 +11,10 @@ func Move(src string, dest string) {
 	destFile, err := os.Create(dest)
 
 	if err != nil {
-		log.Printf("[!] Couldn't create a file to copy. Reason: %v", err)
+		log.Printf("[!] couldn't create a file to copy. Reason: %v", err)
 	} else {
 		defer destFile.Close()
-		
+
 		srcFile, err := os.Open(src)
 
 		if err != nil {
@@ -24,7 +24,7 @@ func Move(src string, dest string) {
 		_, err = io.Copy(destFile, srcFile)
 
 		if err != nil {
-			log.Printf("[!] Couldn't copy contents of the %s file. Reason %v", src, err)
+			log.Printf("[!] couldn't copy contents of the %s file. Reason %v", src, err)
 		}
 
 		// Close the original file to removal
@@ -33,7 +33,7 @@ func Move(src string, dest string) {
 		err = os.Remove(src)
 
 		if err != nil {
-			log.Printf("[!] Couldn't remove file %s. Reason %v", src, err)
+			log.Printf("[!] couldn't remove file %s. Reason %v", src, err)
 		}
 	}
 }
